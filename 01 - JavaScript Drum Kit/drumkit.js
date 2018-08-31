@@ -1,45 +1,38 @@
 let drumkitButtons = document.getElementsByClassName('key');
+let audioSources = document.getElementsByTagName('audio');
 
-let playSound = (btn) => {
-    let audio;
-    let keyCode = btn.dataset.key;
+let playSound = (keyCode) => {
+    let source = findElementFromKey(audioSources, keyCode);
+    if (!source) return;
+    addPlayingEffect(keyCode);
+    let audio = new Audio(source.src);
+    audio.play();
+}
 
-    btn.classList.add("playing");
-    if(keyCode == 65) {
-        audio = new Audio("./sounds/clap.wav");
-        audio.play();
-    } else if (keyCode == 83) {
-        audio = new Audio("./sounds/hihat.wav");
-        audio.play();
-    } else if (keyCode == 68) {
-        audio = new Audio("./sounds/kick.wav");
-        audio.play();
-    } else if (keyCode == 70) {
-        audio = new Audio("./sounds/openhat.wav");
-        audio.play();
-    } else if (keyCode == 71) {
-        audio = new Audio("./sounds/boom.wav");
-        audio.play();
-    } else if (keyCode == 72) {
-        audio = new Audio("./sounds/ride.wav");
-        audio.play();
-    } else if (keyCode == 74) {
-        audio = new Audio("./sounds/snare.wav");
-        audio.play();
-    } else if (keyCode == 75) {
-        audio = new Audio("./sounds/tom.wav");
-        audio.play();
-    } else if (keyCode == 76) {
-        audio = new Audio("./sounds/tink.wav");
-        audio.play();
+let addPlayingEffect = (keyCode) => {
+    let btn = findElementFromKey(drumkitButtons, keyCode);
+    btn.classList.add('playing');
+}
+
+let findElementFromKey = (elements, keyCode) => {
+    for (let i = 0; i < elements.length; i++) {
+        if(elements[i].dataset.key == keyCode) {
+            return elements[i];
+        }
     }
+    return null;
 }
 
 $(document).ready(function() {
     $('.key').bind('webkitTransitionEnd', function()  {
         this.classList.remove("playing");
     });
+
     $('.key').click(function() {
-        playSound(this);
+        playSound(this.dataset.key);
+    });
+
+    document.addEventListener('keydown', function(event) {
+        playSound(event.keyCode);
     });
 });
